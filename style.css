@@ -1,7 +1,15 @@
+:root {
+    --font-family: "Courier New", monospace;
+    --font-size: min(2vh, 2vw);
+    --gap: 1vh;
+    --max-width: 400px;
+    --height: 3vh;
+}
+
 * {
-    font-family: "Courier New", monospace;
-    font-size: min(2vh, 2vw);
-    gap: 1vh;
+    font-family: var(--font-family);
+    font-size: var(--font-size);
+    gap: var(--gap);
 }
 
 html, body {
@@ -17,25 +25,31 @@ body {
     height: 100vh;
 }
 
-.calculatorContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: auto;
-    width: 50%;
-    max-width: 400px;
-}
-
+.calculatorContainer,
 .resultContainer,
 .topContainer,
 .bottomContainer {
+    display: flex;
     width: 50%;
 }
 
-.topContainer {
-    display: flex;
-    justify-content: space-between;
-    text-align: center;
+.calculatorContainer {
+    flex-direction: column;
+    align-items: center;
+    max-width: var(--max-width);
+}
+
+.resultContainer {
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0.5vh;
+    box-sizing: border-box;
+    border: 0.125vh solid black;
+    height: var(--height);
+}
+
+button {
+    height: var(--height);
 }
 
 .topContainer button {
