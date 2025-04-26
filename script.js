@@ -1,5 +1,6 @@
 const resultContainer = document.querySelector('.resultContainer');
 const buttons = document.querySelectorAll('button');
+buttons.forEach(button => button.addEventListener('click', handleButtonClick));
 
 let currentInput = '';
 let previousInput = '';
@@ -7,18 +8,11 @@ let operator = null;
 
 function updateDisplay() {
     let displayValue = currentInput || (previousInput && operator) || '0';
-
-    // Truncate the display value to fit within 12 characters
     if (displayValue.length > 12) {
-        if (displayValue.includes('.') && displayValue.indexOf('.') < 12) {
-            // If there's a decimal point within the first 12 characters, truncate after it
+        if (displayValue.includes('.') && displayValue.indexOf('.') < 12) 
             displayValue = displayValue.slice(0, 12);
-        } else {
-            // Otherwise, use scientific notation for large numbers
-            displayValue = parseFloat(displayValue).toExponential(2);
-        }
+        else displayValue = parseFloat(displayValue).toExponential(2);
     }
-
     resultContainer.textContent = displayValue;
 }
 
@@ -28,14 +22,12 @@ function roundNumber(num, decimals = 10) {
 
 function handleButtonClick(event) {
     const buttonValue = event.target.textContent;
-
     if (!isNaN(buttonValue) || buttonValue === '.') {
         if (buttonValue === '.' && currentInput.includes('.')) return;
         currentInput += buttonValue;
     }
     else if (['+', '-', '×', '÷'].includes(buttonValue)) {
         if (currentInput && previousInput && operator) {
-            // Perform intermediate calculation
             const num1 = parseFloat(previousInput);
             const num2 = parseFloat(currentInput);
             let result;
@@ -47,12 +39,12 @@ function handleButtonClick(event) {
             }
             previousInput = result !== 'NOPE' ? roundNumber(result).toString() : 'NOPE';
             currentInput = '';
-        } else if (currentInput) {
-            // If no intermediate calculation, move currentInput to previousInput
+        }
+        else if (currentInput) {
             previousInput = currentInput;
             currentInput = '';
         }
-        operator = buttonValue; // Update the operator
+        operator = buttonValue;
     }
     else if (buttonValue === '=') {
         if (previousInput && currentInput && operator) {
@@ -75,13 +67,8 @@ function handleButtonClick(event) {
         previousInput = '';
         operator = null;
     }
-    else if (buttonValue === 'DEL') {
-        currentInput = currentInput.slice(0, -1);
-    }
-
+    else if (buttonValue === 'DEL') currentInput = currentInput.slice(0, -1);
     updateDisplay();
 }
-
-buttons.forEach(button => button.addEventListener('click', handleButtonClick));
 
 updateDisplay();
