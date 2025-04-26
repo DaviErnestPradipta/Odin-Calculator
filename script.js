@@ -21,7 +21,7 @@ function formatDisplayValue(value) {
     return value;
 }
 
-function roundNumber(num, decimals = 2) {
+function roundNumber(num, decimals = 10) {
     return Math.round(num * Math.pow(10, decimals)) / Math.pow(10, decimals);
 }
 
@@ -42,15 +42,13 @@ function calculateResult() {
 }
 
 function performOperation(num1, num2, operator) {
-    let result;
     switch (operator) {
-        case '+': result = num1 + num2; break;
-        case '-': result = num1 - num2; break;
-        case '×': result = num1 * num2; break;
-        case '÷': result = num2 !== 0 ? num1 / num2 : 'NOPE'; break;
+        case '+': return num1 + num2;
+        case '-': return num1 - num2;
+        case '×': return num1 * num2;
+        case '÷': return num2 !== 0 ? num1 / num2 : 'NOPE';
         default: return null;
     }
-    return result !== 'NOPE' ? roundNumber(result, 10) : result;
 }
 
 function handleButtonClick(event) {
