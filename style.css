@@ -23,20 +23,9 @@ html, body {
 }
 
 .bottomContainer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.leftContainer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.rightContainer {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
     justify-content: center;
     align-items: center;
 }
