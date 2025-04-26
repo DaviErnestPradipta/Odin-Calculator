@@ -36,7 +36,6 @@ body {
     display: flex;
     justify-content: space-between;
     text-align: center;
-    gap: 1vh;
 }
 
 .topContainer button {
