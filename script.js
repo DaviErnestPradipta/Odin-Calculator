@@ -34,17 +34,31 @@ function handleButtonClick(event) {
         currentInput += buttonValue;
     }
     else if (['+', '-', '×', '÷'].includes(buttonValue)) {
-        if (currentInput) {
+        if (currentInput && previousInput && operator) {
+            // Perform intermediate calculation
+            const num1 = parseFloat(previousInput);
+            const num2 = parseFloat(currentInput);
+            let result;
+            switch (operator) {
+                case '+': result = num1 + num2; break;
+                case '-': result = num1 - num2; break;
+                case '×': result = num1 * num2; break;
+                case '÷': result = num2 !== 0 ? num1 / num2 : 'NOPE'; break;
+            }
+            previousInput = result !== 'NOPE' ? roundNumber(result).toString() : 'NOPE';
+            currentInput = '';
+        } else if (currentInput) {
+            // If no intermediate calculation, move currentInput to previousInput
             previousInput = currentInput;
             currentInput = '';
         }
-        operator = buttonValue;
+        operator = buttonValue; // Update the operator
     }
     else if (buttonValue === '=') {
         if (previousInput && currentInput && operator) {
             const num1 = parseFloat(previousInput);
             const num2 = parseFloat(currentInput);
-            let result; // Define the result variable here
+            let result;
             switch (operator) {
                 case '+': result = num1 + num2; break;
                 case '-': result = num1 - num2; break;
@@ -61,7 +75,9 @@ function handleButtonClick(event) {
         previousInput = '';
         operator = null;
     }
-    else if (buttonValue === 'DEL') currentInput = currentInput.slice(0, -1);
+    else if (buttonValue === 'DEL') {
+        currentInput = currentInput.slice(0, -1);
+    }
 
     updateDisplay();
 }
