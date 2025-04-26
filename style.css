@@ -52,6 +52,12 @@ button {
     height: var(--height);
 }
 
+button.active {
+    background-color: black;
+    color: white;
+    transition: all 0.1s ease;
+}
+
 .topContainer button {
     flex-grow: 1;
 }

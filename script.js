@@ -1,6 +1,7 @@
 const resultContainer = document.querySelector('.resultContainer');
 const buttons = document.querySelectorAll('button');
 buttons.forEach(button => button.addEventListener('click', handleButtonClick));
+document.addEventListener('keydown', handleKeyPress);
 
 let currentInput = '';
 let previousInput = '';
@@ -80,6 +81,18 @@ function isOperator(value) {
     return ['+', '-', '×', '÷'].includes(value);
 }
 
+function isOperatorKey(key) {
+    return ['+', '-', '*', '/'].includes(key);
+}
+
+function convertOperatorKey(key) {
+    switch (key) {
+        case '*': return '×';
+        case '/': return '÷';
+        default: return key;
+    }
+}
+
 function handleNumericInput(value) {
     if (isResultDisplayed) resetCalculator();
     if (value === '.' && currentInput.includes('.')) return;
@@ -111,6 +124,31 @@ function handleEqualsInput() {
 function handleDeleteInput() {
     if (isResultDisplayed) resetCalculator(false);
     else currentInput = currentInput.slice(0, -1);
+}
+
+function handleKeyPress(event) {
+    const key = event.key;
+
+    if (isNumericOrDot(key)) handleNumericInput(key);
+    else if (isOperatorKey(key)) handleOperatorInput(convertOperatorKey(key));
+    else if (key === '=' || key === 'Enter') handleEqualsInput();
+    else if (key === 'Backspace') handleDeleteInput();
+    else if (key.toLowerCase() === 'c') resetCalculator();
+
+    highlightButton(key);
+    updateDisplay();
+}
+
+function highlightButton(key) {
+    const button = Array.from(buttons).find(btn => {
+        const text = btn.textContent;
+        return text === key || (key === 'Enter' && text === '=') || (key === 'Backspace' && text === 'DEL') || (key.toLowerCase() === 'c' && text === 'CLR');
+    });
+
+    if (button) {
+        button.classList.add('active');
+        setTimeout(() => button.classList.remove('active'), 100);
+    }
 }
 
 updateDisplay();
