@@ -21,6 +21,7 @@ const specialKeys = {
 
 const resultContainer = document.querySelector('.resultContainer');
 const buttons = document.querySelectorAll('button');
+const maximumResultLength = 11;
 buttons.forEach(button => button.addEventListener('click', handleButtonClick));
 document.addEventListener('keydown', handleKeyPress);
 
@@ -41,8 +42,9 @@ function updateDisplay() {
 }
 
 function formatDisplayValue(value) {
-    if (value.length > 12) {
-        if (value.includes('.') && value.indexOf('.') < 12) return value.slice(0, 12);
+    if (value.length > maximumResultLength) {
+        if (value.includes('.') && value.indexOf('.') < 11)
+            return value.slice(0, maximumResultLength);
         return parseFloat(value).toExponential(2);
     }
     return value;
