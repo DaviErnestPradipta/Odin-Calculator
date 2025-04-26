@@ -3,7 +3,9 @@
     --font-size: min(2vh, 2vw);
     --gap: 1vh;
     --max-width: 400px;
+    --border: 0.25vh solid black;
     --height: 3vh;
+    --transition: all 0.1s ease;
 }
 
 * {
@@ -44,18 +46,21 @@ body {
     align-items: center;
     padding: 0.5vh;
     box-sizing: border-box;
-    border: 0.125vh solid black;
+    border: var(--border);
     height: var(--height);
 }
 
 button {
     height: var(--height);
+    background-color: white;
+    color: black;
+    border: var(--border);
 }
 
 button.active {
     background-color: black;
     color: white;
-    transition: all 0.1s ease;
+    transition: var(--transition);
 }
 
 .topContainer button {
