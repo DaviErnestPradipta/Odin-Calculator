@@ -38,17 +38,19 @@ function calculateResult() {
     const num1 = parseFloat(previousInput);
     const num2 = parseFloat(currentInput);
     const result = performOperation(num1, num2, operator);
-    return result !== 'NOPE' ? roundNumber(result).toString() : 'NOPE';
+    return result !== 'NOPE' ? roundNumber(result, 10).toString() : 'NOPE';
 }
 
 function performOperation(num1, num2, operator) {
+    let result;
     switch (operator) {
-        case '+': return num1 + num2;
-        case '-': return num1 - num2;
-        case '×': return num1 * num2;
-        case '÷': return num2 !== 0 ? num1 / num2 : 'NOPE';
+        case '+': result = num1 + num2; break;
+        case '-': result = num1 - num2; break;
+        case '×': result = num1 * num2; break;
+        case '÷': result = num2 !== 0 ? num1 / num2 : 'NOPE'; break;
         default: return null;
     }
+    return result !== 'NOPE' ? roundNumber(result, 10) : result;
 }
 
 function handleButtonClick(event) {
