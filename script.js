@@ -59,6 +59,8 @@ function resetCalculator(clearAll = true) {
 // Input Handling Functions
 
 function processInput(value) {
+    if (value === ' ') return;
+    
     const inputType = getInputType(value);
     const handlers = {
         numeric: handleNumericInput,
