@@ -16,6 +16,7 @@ const specialKeys = {
     c: 'clear',
     DEL: 'delete',
     Backspace: 'delete',
+    Delete: 'delete',
 };
 
 const resultContainer = document.querySelector('.resultContainer');
@@ -161,8 +162,13 @@ function performOperation(num1, num2, operator) {
 // Highlighting Function
 
 function highlightButton(value) {
-    const normalizedValue = Object.keys(specialKeys).includes(value) ? specialKeys[value] : value;
-    const button = Array.from(buttons).find(btn => btn.textContent === normalizedValue);
+    let normalizedValue = value;
+
+    if (specialKeys[value]) {
+        normalizedValue = Object.keys(specialKeys).find(key => specialKeys[key] === specialKeys[value]);
+    }
+
+    const button = Array.from(buttons).find(btn => btn.textContent.trim() === normalizedValue);
 
     if (button) {
         button.classList.add('active');
