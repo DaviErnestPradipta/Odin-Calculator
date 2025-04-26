@@ -1,3 +1,23 @@
+// Start of Initialization
+
+const operatorMap = {
+    '*': '×',
+    '/': '÷',
+    '+': '+',
+    '-': '-',
+    '×': '*',
+    '÷': '/',
+};
+
+const specialKeys = {
+    '=': 'equals',
+    Enter: 'equals',
+    CLR: 'clear',
+    c: 'clear',
+    DEL: 'delete',
+    Backspace: 'delete',
+};
+
 const resultContainer = document.querySelector('.resultContainer');
 const buttons = document.querySelectorAll('button');
 buttons.forEach(button => button.addEventListener('click', handleButtonClick));
@@ -7,6 +27,11 @@ let currentInput = '';
 let previousInput = '';
 let operator = null;
 let isResultDisplayed = false;
+
+updateDisplay();
+
+// End of Initialization
+// Display and Reset Functions
 
 function updateDisplay() {
     let displayValue = currentInput || (previousInput && operator) || '0';
@@ -24,12 +49,83 @@ function formatDisplayValue(value) {
 
 function resetCalculator(clearAll = true) {
     currentInput = '';
-    if (clearAll) {
-        previousInput = '';
-        operator = null;
-    }
+    previousInput = clearAll ? null : previousInput;
+    operator = clearAll ? null : operator;
     isResultDisplayed = false;
 }
+
+// End of Display and Reset Functions
+// Input Handling Functions
+
+function processInput(value) {
+    const inputType = getInputType(value);
+    const handlers = {
+        numeric: handleNumericInput,
+        operator: handleOperatorInput,
+        equals: handleEqualsInput,
+        clear: () => resetCalculator(),
+        delete: handleDeleteInput,
+    };
+
+    if (handlers[inputType]) handlers[inputType](value);
+    updateDisplay();
+}
+
+function getInputType(value) {
+    if (!isNaN(value) || value === '.') return 'numeric';
+    if (Object.values(operatorMap).includes(value)) return 'operator';
+    return specialKeys[value] || 'unknown';
+}
+
+function handleButtonClick(event) {
+    const buttonValue = event.target.textContent;
+    processInput(buttonValue);
+}
+
+function handleKeyPress(event) {
+    const value = operatorMap[event.key] || event.key;
+    processInput(value);
+    highlightButton(value);
+}
+
+// End of Input Handling Functions
+// Start of Specific Input Handlers
+
+function handleNumericInput(value) {
+    if (isResultDisplayed) resetCalculator();
+    if (value === '.' && currentInput.includes('.')) return;
+    currentInput += value;
+}
+
+function handleOperatorInput(value) {
+    if (previousInput && currentInput && operator) {
+        previousInput = calculateResult();
+    }
+    else if (currentInput) {
+        previousInput = currentInput;
+    }
+
+    currentInput = '';
+    operator = value;
+    isResultDisplayed = false;
+}
+
+function handleEqualsInput() {
+    if (previousInput && currentInput && operator) {
+        currentInput = calculateResult();
+        previousInput = '';
+        operator = null;
+        isResultDisplayed = true;
+    }
+}
+
+function handleDeleteInput() {
+    if (isResultDisplayed) resetCalculator(false);
+    else currentInput = currentInput.slice(0, -1);
+}
+
+// End of Specific Input Handlers
+// Start of Calculation Functions
 
 function calculateResult() {
     try {
@@ -61,89 +157,12 @@ function performOperation(num1, num2, operator) {
     }
 }
 
-function handleButtonClick(event) {
-    const buttonValue = event.target.textContent;
+// End of Calculation Functions
+// Highlighting Function
 
-    if (isNumericOrDot(buttonValue)) handleNumericInput(buttonValue);
-    else if (isOperator(buttonValue)) handleOperatorInput(buttonValue);
-    else if (buttonValue === '=') handleEqualsInput();
-    else if (buttonValue === 'CLR') resetCalculator();
-    else if (buttonValue === 'DEL') handleDeleteInput();
-
-    updateDisplay();
-}
-
-function isNumericOrDot(value) {
-    return !isNaN(value) || value === '.';
-}
-
-function isOperator(value) {
-    return ['+', '-', '×', '÷'].includes(value);
-}
-
-function isOperatorKey(key) {
-    return ['+', '-', '*', '/'].includes(key);
-}
-
-function convertOperatorKey(key) {
-    switch (key) {
-        case '*': return '×';
-        case '/': return '÷';
-        default: return key;
-    }
-}
-
-function handleNumericInput(value) {
-    if (isResultDisplayed) resetCalculator();
-    if (value === '.' && currentInput.includes('.')) return;
-    currentInput += value;
-}
-
-function handleOperatorInput(value) {
-    if (currentInput && previousInput && operator) {
-        previousInput = calculateResult();
-        currentInput = '';
-    }
-    else if (currentInput) {
-        previousInput = currentInput;
-        currentInput = '';
-    }
-    operator = value;
-    isResultDisplayed = false;
-}
-
-function handleEqualsInput() {
-    if (previousInput && currentInput && operator) {
-        currentInput = calculateResult();
-        previousInput = '';
-        operator = null;
-        isResultDisplayed = true;
-    }
-}
-
-function handleDeleteInput() {
-    if (isResultDisplayed) resetCalculator(false);
-    else currentInput = currentInput.slice(0, -1);
-}
-
-function handleKeyPress(event) {
-    const key = event.key;
-
-    if (isNumericOrDot(key)) handleNumericInput(key);
-    else if (isOperatorKey(key)) handleOperatorInput(convertOperatorKey(key));
-    else if (key === '=' || key === 'Enter') handleEqualsInput();
-    else if (key === 'Backspace') handleDeleteInput();
-    else if (key.toLowerCase() === 'c') resetCalculator();
-
-    highlightButton(key);
-    updateDisplay();
-}
-
-function highlightButton(key) {
-    const button = Array.from(buttons).find(btn => {
-        const text = btn.textContent;
-        return text === key || (key === 'Enter' && text === '=') || (key === 'Backspace' && text === 'DEL') || (key.toLowerCase() === 'c' && text === 'CLR');
-    });
+function highlightButton(value) {
+    const normalizedValue = Object.keys(specialKeys).includes(value) ? specialKeys[value] : value;
+    const button = Array.from(buttons).find(btn => btn.textContent === normalizedValue);
 
     if (button) {
         button.classList.add('active');
@@ -151,4 +170,4 @@ function highlightButton(key) {
     }
 }
 
-updateDisplay();
+// End of Highlighting Function
