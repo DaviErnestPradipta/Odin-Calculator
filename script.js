@@ -9,12 +9,16 @@ let isResultDisplayed = false;
 
 function updateDisplay() {
     let displayValue = currentInput || (previousInput && operator) || '0';
-    if (displayValue.length > 12) {
-        if (displayValue.includes('.') && displayValue.indexOf('.') < 12) 
-            displayValue = displayValue.slice(0, 12);
-        else displayValue = parseFloat(displayValue).toExponential(2);
-    }
+    displayValue = formatDisplayValue(displayValue);
     resultContainer.textContent = displayValue;
+}
+
+function formatDisplayValue(value) {
+    if (value.length > 12) {
+        if (value.includes('.') && value.indexOf('.') < 12) return value.slice(0, 12);
+        return parseFloat(value).toExponential(2);
+    }
+    return value;
 }
 
 function roundNumber(num, decimals = 2) {
@@ -33,52 +37,71 @@ function resetCalculator(clearAll = true) {
 function calculateResult() {
     const num1 = parseFloat(previousInput);
     const num2 = parseFloat(currentInput);
-    let result;
-    switch (operator) {
-        case '+': result = num1 + num2; break;
-        case '-': result = num1 - num2; break;
-        case '×': result = num1 * num2; break;
-        case '÷': result = num2 !== 0 ? num1 / num2 : 'NOPE'; break;
-    }
+    const result = performOperation(num1, num2, operator);
     return result !== 'NOPE' ? roundNumber(result).toString() : 'NOPE';
+}
+
+function performOperation(num1, num2, operator) {
+    switch (operator) {
+        case '+': return num1 + num2;
+        case '-': return num1 - num2;
+        case '×': return num1 * num2;
+        case '÷': return num2 !== 0 ? num1 / num2 : 'NOPE';
+        default: return null;
+    }
 }
 
 function handleButtonClick(event) {
     const buttonValue = event.target.textContent;
 
-    if (!isNaN(buttonValue) || buttonValue === '.') {
-        if (isResultDisplayed) resetCalculator();
-        if (buttonValue === '.' && currentInput.includes('.')) return;
-        currentInput += buttonValue;
-    }
-    else if (['+', '-', '×', '÷'].includes(buttonValue)) {
-        if (currentInput && previousInput && operator) {
-            previousInput = calculateResult();
-            currentInput = '';
-        }
-        else if (currentInput) {
-            previousInput = currentInput;
-            currentInput = '';
-        }
-        operator = buttonValue;
-        isResultDisplayed = false;
-    }
-    else if (buttonValue === '=') {
-        if (previousInput && currentInput && operator) {
-            currentInput = calculateResult();
-            previousInput = '';
-            operator = null;
-            isResultDisplayed = true;
-        }
-    }
-    else if (buttonValue === 'CLR') {
-        resetCalculator();
-    }
-    else if (buttonValue === 'DEL') {
-        if (isResultDisplayed) resetCalculator(false);
-        else currentInput = currentInput.slice(0, -1);
-    }
+    if (isNumericOrDot(buttonValue)) handleNumericInput(buttonValue);
+    else if (isOperator(buttonValue)) handleOperatorInput(buttonValue);
+    else if (buttonValue === '=') handleEqualsInput();
+    else if (buttonValue === 'CLR') resetCalculator();
+    else if (buttonValue === 'DEL') handleDeleteInput();
+
     updateDisplay();
+}
+
+function isNumericOrDot(value) {
+    return !isNaN(value) || value === '.';
+}
+
+function isOperator(value) {
+    return ['+', '-', '×', '÷'].includes(value);
+}
+
+function handleNumericInput(value) {
+    if (isResultDisplayed) resetCalculator();
+    if (value === '.' && currentInput.includes('.')) return;
+    currentInput += value;
+}
+
+function handleOperatorInput(value) {
+    if (currentInput && previousInput && operator) {
+        previousInput = calculateResult();
+        currentInput = '';
+    }
+    else if (currentInput) {
+        previousInput = currentInput;
+        currentInput = '';
+    }
+    operator = value;
+    isResultDisplayed = false;
+}
+
+function handleEqualsInput() {
+    if (previousInput && currentInput && operator) {
+        currentInput = calculateResult();
+        previousInput = '';
+        operator = null;
+        isResultDisplayed = true;
+    }
+}
+
+function handleDeleteInput() {
+    if (isResultDisplayed) resetCalculator(false);
+    else currentInput = currentInput.slice(0, -1);
 }
 
 updateDisplay();
