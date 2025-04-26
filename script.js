@@ -5,6 +5,7 @@ buttons.forEach(button => button.addEventListener('click', handleButtonClick));
 let currentInput = '';
 let previousInput = '';
 let operator = null;
+let isResultDisplayed = false;
 
 function updateDisplay() {
     let displayValue = currentInput || (previousInput && operator) || '0';
@@ -23,6 +24,12 @@ function roundNumber(num, decimals = 10) {
 function handleButtonClick(event) {
     const buttonValue = event.target.textContent;
     if (!isNaN(buttonValue) || buttonValue === '.') {
+        if (isResultDisplayed) {
+            currentInput = '';
+            previousInput = '';
+            operator = null;
+            isResultDisplayed = false;
+        }
         if (buttonValue === '.' && currentInput.includes('.')) return;
         currentInput += buttonValue;
     }
@@ -45,6 +52,7 @@ function handleButtonClick(event) {
             currentInput = '';
         }
         operator = buttonValue;
+        isResultDisplayed = false;
     }
     else if (buttonValue === '=') {
         if (previousInput && currentInput && operator) {
@@ -60,14 +68,22 @@ function handleButtonClick(event) {
             currentInput = result !== 'NOPE' ? roundNumber(result).toString() : 'NOPE';
             previousInput = '';
             operator = null;
+            isResultDisplayed = true;
         }
     }
     else if (buttonValue === 'CLR') {
         currentInput = '';
         previousInput = '';
         operator = null;
+        isResultDisplayed = false;
     }
-    else if (buttonValue === 'DEL') currentInput = currentInput.slice(0, -1);
+    else if (buttonValue === 'DEL') {
+        if (isResultDisplayed) {
+            currentInput = '';
+            isResultDisplayed = false;
+        } 
+        else currentInput = currentInput.slice(0, -1);
+    }
     updateDisplay();
 }
 
