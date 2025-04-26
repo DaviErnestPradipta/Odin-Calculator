@@ -21,10 +21,6 @@ function formatDisplayValue(value) {
     return value;
 }
 
-function roundNumber(num, decimals = 10) {
-    return Math.round(num * Math.pow(10, decimals)) / Math.pow(10, decimals);
-}
-
 function resetCalculator(clearAll = true) {
     currentInput = '';
     if (clearAll) {
@@ -35,18 +31,31 @@ function resetCalculator(clearAll = true) {
 }
 
 function calculateResult() {
-    const num1 = parseFloat(previousInput);
-    const num2 = parseFloat(currentInput);
-    const result = performOperation(num1, num2, operator);
-    return result !== 'NOPE' ? roundNumber(result, 10).toString() : 'NOPE';
+    try {
+        const num1 = new Decimal(previousInput || 0);
+        const num2 = new Decimal(currentInput || 0);
+        const result = performOperation(num1, num2, operator);
+        
+        if (result !== 'NOPE') {
+            const roundedResult = result.toNumber();
+            if (Math.abs(roundedResult - Math.round(roundedResult)) < 1e-10)
+                return Math.round(roundedResult).toString();
+            return result.toString();
+        }
+
+        return 'NOPE';
+    }
+    catch {
+        return 'NOPE';
+    }
 }
 
 function performOperation(num1, num2, operator) {
     switch (operator) {
-        case '+': return num1 + num2;
-        case '-': return num1 - num2;
-        case '×': return num1 * num2;
-        case '÷': return num2 !== 0 ? num1 / num2 : 'NOPE';
+        case '+': return num1.plus(num2);
+        case '-': return num1.minus(num2);
+        case '×': return num1.times(num2);
+        case '÷': return !num2.isZero() ? num1.div(num2) : 'NOPE';
         default: return null;
     }
 }
